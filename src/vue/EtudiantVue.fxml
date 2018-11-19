@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="mCenter" nodeOrientation="RIGHT_TO_LEFT" styleClass="mainContainer" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EtudiantController">
+   <children>
+      <Group VBox.vgrow="ALWAYS">
+         <children>
+            <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="10.0">
+               <children>
+                  <GridPane prefHeight="308.0" prefWidth="488.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="357.0" minWidth="10.0" prefWidth="268.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="357.0" minWidth="10.0" prefWidth="268.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mLabel" text="الاسم" textAlignment="RIGHT">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                        </Label>
+                        <TextField fx:id="nom" nodeOrientation="RIGHT_TO_LEFT" prefHeight="25.0" prefWidth="270.0" promptText="ادخل الاسم" styleClass="mCostum_field" GridPane.columnIndex="1">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                        </TextField>
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mLabel" text="النسب" GridPane.rowIndex="1">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mLabel" text="تاريخ الازدياد" GridPane.rowIndex="2">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="87.0" styleClass="mLabel" text=" مكان الازدياد" GridPane.rowIndex="3">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="prenom" nodeOrientation="RIGHT_TO_LEFT" promptText="ادخل النسب" styleClass="mCostum_field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <DatePicker fx:id="date" cache="true" nodeOrientation="RIGHT_TO_LEFT" prefHeight="25.0" prefWidth="362.0" promptText="تاريخ الازدياد" styleClass="mCostum_field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mLabel" text="الرقم الوطني" GridPane.rowIndex="4">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="cne" nodeOrientation="RIGHT_TO_LEFT" promptText="ادخل الرقم الوطني" styleClass="mCostum_field" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mLabel" text="المستوى الدراسي" GridPane.rowIndex="5">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="niveau" nodeOrientation="RIGHT_TO_LEFT" promptText="ادخل المستوى الدراسي" styleClass="mCostum_field" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <TextField fx:id="lieu" layoutX="254.0" layoutY="196.0" nodeOrientation="RIGHT_TO_LEFT" promptText="ادخل مكان الازدياد" styleClass="mCostum_field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mLabel" text="المؤسسة" GridPane.rowIndex="6">
+                           <padding>
+                              <Insets top="-1.0" />
+                           </padding>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="etablissement" disable="true" prefHeight="25.0" prefWidth="266.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </GridPane>
+                  <VBox spacing="10.0">
+                     <children>
+                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#saveAction" prefHeight="25.0" prefWidth="73.0" styleClass="record-sales" text="اضف" />
+                        <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#updateAction" prefHeight="25.0" prefWidth="72.0" styleClass="record-sales" text="تغيير" />
+                        <Button layoutX="20.0" layoutY="72.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#deleteAction" prefHeight="42.0" prefWidth="151.0" styleClass="record-sales" text="حدف" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button layoutX="20.0" layoutY="124.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#importeFile" prefHeight="42.0" prefWidth="151.0" styleClass="record-sales" text="إضافة من ملف" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+         </children>
+      </Group>
+      <TableView fx:id="mTable" editable="true" nodeOrientation="RIGHT_TO_LEFT">
+         <columns>
+            <TableColumn fx:id="nomColumn" minWidth="60.0" prefWidth="64.0" text="الاسم" />
+            <TableColumn fx:id="prenomColumn" minWidth="0.0" prefWidth="78.0" text="النسب" />
+            <TableColumn fx:id="dateColumn" minWidth="0.0" prefWidth="130.0" text="تاريخ الازدياد" />
+            <TableColumn fx:id="lieuColumn" minWidth="0.0" prefWidth="109.0" text="مكان الازدياد" />
+            <TableColumn fx:id="cneColumn" prefWidth="157.0" text="الرقم الوطني" />
+            <TableColumn fx:id="niveauColumn" prefWidth="150.0" text="المستوى الدراسي" />
+            <TableColumn fx:id="etablissementColumn" prefWidth="150.0" text="المؤسسة" />
+         </columns>
+      </TableView>
+   </children>
+</VBox>
