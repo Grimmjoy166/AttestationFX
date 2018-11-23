@@ -158,5 +158,25 @@ public class EmployeService implements IDao<Employe> {
         }
     }
     
+     public List<Object[]> getChartData() {
+        List<Object[]> mData = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            mData = session.createQuery("SELECT e.profil.libelle,COUNT(e) FROM Employe e Group by e.profil.libelle").list();
+            tx.commit();
+            session.close();
+            return mData;
+        } catch (HibernateException ex) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            session.close();
+            return mData;
+        }
+
+    }
+    
 
 }

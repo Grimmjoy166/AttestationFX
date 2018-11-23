@@ -9,13 +9,18 @@ import beans.Employe;
 import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,13 +28,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -40,6 +41,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import service.EmployeService;
 import service.EtablissementService;
 import service.EtudiantService;
@@ -68,8 +70,6 @@ public class MainController implements Initializable {
     @FXML
     private Text etudiantCount;
     @FXML
-    private Text etablissementCount;
-    @FXML
     private VBox mainCenter;
     @FXML
     private VBox profilTicket;
@@ -77,8 +77,6 @@ public class MainController implements Initializable {
     private VBox employeTicket;
     @FXML
     private VBox etudiantTicket;
-    @FXML
-    private VBox etablissementTicket;
     @FXML
     private JFXButton logOutBtn;
     @FXML
@@ -93,13 +91,24 @@ public class MainController implements Initializable {
     private ImageView minBarBtn;
     @FXML
     private HBox mTopBar;
+    @FXML 
+    private JFXButton employeScene;
+    @FXML
+    private JFXButton profilScene;
+    @FXML
+    private JFXButton etablissementScene;
+    @FXML
+    private Separator separator1;
+    @FXML
+    private Separator separator2;
+    @FXML
+    private Separator separator3;
+    
+    @FXML
+    private PieChart mChart;
 
-    @FXML
-    private final CategoryAxis mChartEtab = new CategoryAxis();
-    @FXML
-    private final NumberAxis mChartEtud = new NumberAxis();
-    @FXML
-    private BarChart<Number, String> mChart = new BarChart<Number, String>(mChartEtud, mChartEtab);
+    ObservableList<PieChart.Data> pieChartData
+            = FXCollections.observableArrayList();
 
     @FXML
     private void switchtoProfil(ActionEvent e) throws IOException {
@@ -144,27 +153,30 @@ public class MainController implements Initializable {
         mBorder.setCenter(v);
     }
 
+    @FXML
+    private void switchCharts(ActionEvent e) throws IOException {
+        headerText.setText("الرسوم البيانية");
+        VBox v = FXMLLoader.load(getClass().getResource("/vue/ChartsVue.fxml"));
+        mBorder.setCenter(v);
+    }
+
     private void setCountsHome() {
         profilCount.setText(ps.getProfilsCount() + "");
         employeCount.setText(es.getEmployesCount() + "");
         etudiantCount.setText(etuds.getEtudiantsCount() + "");
-        etablissementCount.setText(etabs.getEtablissementsCount() + "");
 
     }
 
     private void setChart() {
         mChart.getData().clear();
-        mChart.setBarGap(3);
-        mChart.setCategoryGap(20);
+        pieChartData.clear();
+        mChart.setTitle("عدد الموظفين في كل وظيفة");
 
-        XYChart.Series chartSeries = new XYChart.Series();
-
-        for (Object[] o : etuds.getChartData()) {
-            chartSeries.setName(o[0].toString());
-            chartSeries.getData().add(new XYChart.Data(o[0].toString(), Integer.parseInt(o[1].toString())));
+        for (Object[] o : es.getChartData()) {
+            pieChartData.add(new PieChart.Data(o[0].toString(), Integer.parseInt(o[1].toString())));
         }
 
-        mChart.getData().addAll(chartSeries);
+        mChart.getData().addAll(pieChartData);
 
     }
 
@@ -228,58 +240,55 @@ public class MainController implements Initializable {
             }
         });
 
-        etablissementTicket.setOnMousePressed(e -> {
-            try {
-                headerText.setText("المؤسسات");
-                VBox v = FXMLLoader.load(getClass().getResource("/vue/EtablissementVue.fxml"));
-                mBorder.setCenter(v);
-            } catch (IOException ex) {
-                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-
         Preferences userPreferences = Preferences.userRoot();
         int currentUserId = userPreferences.getInt("currentUserId", 0);
 
         Employe currentEmploye = es.findById(currentUserId);
         userName.setText(currentEmploye.getPrenom() + " " + currentEmploye.getNom());
         userEmail.setText(currentEmploye.getEmail());
+        
+        if(!currentEmploye.getProfil().getLibelle().equals("مدير")){
+            employeScene.setVisible(false);
+            etablissementScene.setVisible(false);
+            profilScene.setVisible(false);
+            separator1.setVisible(false);
+            separator2.setVisible(false);
+            separator3.setVisible(false);         
+        }
 
         logOutBtn.setOnAction(e -> {
             try {
-                
+
                 Stage window = new Stage();
                 window.initModality(Modality.APPLICATION_MODAL);
                 window.initStyle(StageStyle.UNDECORATED);
                 window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
-
 
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
                 Parent root = (Parent) fxmlLoader.load();
                 ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
                 controller.setmMessage("هل تريد تسجيل الخروج ؟");
                 controller.setmTitle("تأكيد");
-                
 
                 Scene scene = new Scene(root);
 
                 window.setScene(scene);
                 window.showAndWait();
-                
-                if(controller.getCurrentState()){
+
+                if (controller.getCurrentState()) {
                     userPreferences.clear();
-                    
+
                     Stage stage = new Stage();
                     stage.initStyle(StageStyle.TRANSPARENT);
-                    stage.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString())); 
+                    stage.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
                     Parent root1 = FXMLLoader.load(getClass().getResource("/vue/LoginVue.fxml"));
 
                     Scene scene1 = new Scene(root1);
                     scene1.setFill(Color.TRANSPARENT);
                     stage.setScene(scene1);
                     stage.show();
-                    
-                    ((Stage)logOutBtn.getScene().getWindow()).close();
+
+                    ((Stage) logOutBtn.getScene().getWindow()).close();
                 }
 
             } catch (IOException ex) {

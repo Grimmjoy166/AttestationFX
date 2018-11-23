@@ -181,17 +181,58 @@ public class EtudiantService implements IDao<Etudiant> {
         }
 
     }
+    
+     public List<Object[]> getPieChartData() {
+        List<Object[]> mData = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            mData = session.createQuery("SELECT e.niveauEtude,COUNT(e) FROM Etudiant e  Group by e.niveauEtude").list();
+            tx.commit();
+            session.close();
+            return mData;
+        } catch (HibernateException ex) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            session.close();
+            return mData;
+        }
+
+    }
+     
+     public List<Object[]> getPieChartData2(Date date) {
+        List<Object[]> mData = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            mData = session.createQuery("SELECT DISTINCT(e.decision) ,COUNT(e) FROM Etudiant e WHERE  YEAR(e.dateSortie) = YEAR(:date)  Group by e.decision")
+                                        .setParameter("date", date)
+                                        .list();
+            tx.commit();
+            session.close();
+            return mData;
+        } catch (HibernateException ex) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            session.close();
+            return mData;
+        }
+
+    }
 
     
-     public Boolean isNotExist(String nom, String prenom, Date dateNaissance) {
+     public Boolean isNotExist(String nomComplet, Date dateNaissance) {
         Etudiant e = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            e = (Etudiant) session.createQuery("SELECT e FROM Etudiant e WHERE e.nom =:nom AND e.prenom =:prenom AND e.dateNaissance =:dateNaissance")
-                                    .setParameter("nom", nom)
-                                    .setParameter("prenom", prenom)
+            e = (Etudiant) session.createQuery("SELECT e FROM Etudiant e WHERE  e.nomComplet =:nomComplet  AND e.dateNaissance =:dateNaissance")
+                                    .setParameter("nomComplet", nomComplet)
                                     .setParameter("dateNaissance", dateNaissance)
                                     .uniqueResult();
             tx.commit();
@@ -209,4 +250,6 @@ public class EtudiantService implements IDao<Etudiant> {
             return false;
         }
     }
+     
+     
 }

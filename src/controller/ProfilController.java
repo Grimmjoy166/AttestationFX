@@ -6,21 +6,26 @@
 package controller;
 
 import beans.Profil;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import service.ProfilService;
 
 /**
@@ -43,39 +48,60 @@ public class ProfilController implements Initializable {
     private TableColumn<Profil, String> codeColumn;
     @FXML
     private TableColumn<Profil, String> libelleColumn;
-    
-    
+
     @FXML
-    private void saveAction(ActionEvent e){
+    private void saveAction(ActionEvent e) {
         ps.create(new Profil(code.getText(), libelle.getText()));
         init();
         clearFields();
     }
-    
-     @FXML
-    private void deleteAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد الحدف");
-        alert.setContentText("هل حقا تريد حدف هده الوظيفة ؟");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+    @FXML
+    private void deleteAction(ActionEvent event) throws IOException {
+
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل حقا تريد حدف هده الوظيفة ؟");
+        controller.setmTitle("تأكيد الحدف");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             ps.delete(ps.findById(index));
             init();
             clearFields();
         }
     }
-    
-     @FXML
-    private void updateAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد التغيير");
-        alert.setContentText("هل تريد حقا تغيير معلومات هذه الوظيفة ؟");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+    @FXML
+    private void updateAction(ActionEvent event) throws IOException {
+
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل تريد حقا تغيير معلومات هذه الوظيفة ؟");
+        controller.setmTitle("تأكيد التغيير");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             Profil p = ps.findById(index);
             p.setCode(code.getText());
             p.setLibelle(libelle.getText());
@@ -84,8 +110,8 @@ public class ProfilController implements Initializable {
             clearFields();
         }
     }
-    
-    private void clearFields(){
+
+    private void clearFields() {
         code.clear();
         libelle.clear();
     }
@@ -95,8 +121,9 @@ public class ProfilController implements Initializable {
         codeColumn.setCellValueFactory(new PropertyValueFactory<>("code"));
         libelleColumn.setCellValueFactory(new PropertyValueFactory<>("libelle"));
 
-        if(ps.findAll() != null)
+        if (ps.findAll() != null) {
             profils.addAll(ps.findAll());
+        }
 
         mTable.setItems(profils);
     }
@@ -108,12 +135,12 @@ public class ProfilController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         init();
         mTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        mTable.setOnMousePressed(e-> {
+        mTable.setOnMousePressed(e -> {
             TablePosition pos = (TablePosition) mTable.getSelectionModel().getSelectedCells().get(0);
             int row = pos.getRow();
             Profil item = mTable.getItems().get(row);
             index = item.getId();
-            
+
             code.setText(item.getCode());
             libelle.setText(item.getLibelle());
         });

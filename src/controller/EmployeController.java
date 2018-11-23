@@ -8,6 +8,7 @@ package controller;
 import beans.Employe;
 import beans.Etablissement;
 import beans.Profil;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -22,22 +23,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import service.EmployeService;
 import service.EtablissementService;
 import service.ProfilService;
@@ -63,12 +65,11 @@ public class EmployeController implements Initializable {
     ObservableList<Employe> employes = FXCollections.observableArrayList();
     ObservableList<Etablissement> etablissements = FXCollections.observableArrayList();
 
-
     //inner static varriable
     private static int index;
     private static int selectedProfilId;
     private static Etablissement currentEtab;
-    
+
     Date dt = new Date();
     Date dt2 = new Date();
 
@@ -115,20 +116,31 @@ public class EmployeController implements Initializable {
         dt = Date.from(instant);
         dt2 = Date.from(instant2);
 
-        es.create(new Employe(nom.getText(), prenom.getText(), dt,dt2 , ps.findById(selectedProfilId), email.getText(), util.MD5(password.getText()), currentEtab));
+        es.create(new Employe(nom.getText(), prenom.getText(), dt, dt2, ps.findById(selectedProfilId), email.getText(), util.MD5(password.getText()), currentEtab));
         init();
         clearFields();
     }
 
     @FXML
-    private void deleteAction(ActionEvent e) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد الحدف");
-        alert.setContentText("هل حقا تريد حدف هذا العامل ؟");
+    private void deleteAction(ActionEvent e) throws IOException {
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل حقا تريد حدف هذا الموظف ؟");
+        controller.setmTitle("تأكيد الحدف");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             es.delete(es.findById(index));
             init();
             clearFields();
@@ -136,15 +148,25 @@ public class EmployeController implements Initializable {
     }
 
     @FXML
-    private void updateAction(ActionEvent e) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد التغيير");
-        alert.setContentText("هل تريد تغيير معلومات هذا العامل ؟");
+    private void updateAction(ActionEvent e) throws IOException {
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
 
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل تريد تغيير معلومات هذا الموظف ؟");
+        controller.setmTitle("تأكيد التغيير");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             Instant instant = Instant.from(date.getValue().atStartOfDay(ZoneId.systemDefault()));
             dt = Date.from(instant);
             Instant instant2 = Instant.from(dateEmb.getValue().atStartOfDay(ZoneId.systemDefault()));
@@ -191,13 +213,16 @@ public class EmployeController implements Initializable {
         profilColumn.setCellValueFactory(new PropertyValueFactory<>("profil"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         etablissementColumn.setCellValueFactory(new PropertyValueFactory<>("etablissement"));
-        
-        if(ps.findAll() != null)
-         profils.addAll(ps.findAll());
-        if(es.findAll() != null)
-         employes.addAll(es.findAll());
-        if(ets.findAll() != null)
-         etablissements.addAll(ets.findAll());
+
+        if (ps.findAll() != null) {
+            profils.addAll(ps.findAll());
+        }
+        if (es.findAll() != null) {
+            employes.addAll(es.findAll());
+        }
+        if (ets.findAll() != null) {
+            etablissements.addAll(ets.findAll());
+        }
 
         profil.setItems(profils);
         mTable.setItems(employes);
@@ -212,8 +237,12 @@ public class EmployeController implements Initializable {
         mTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         profil.setOnAction(e -> {
-            Profil p = profil.getSelectionModel().getSelectedItem();
-            selectedProfilId = p.getId();
+            try {
+                Profil p = profil.getSelectionModel().getSelectedItem();
+                selectedProfilId = p.getId();
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
         });
 
         mTable.setOnMousePressed(e -> {
@@ -240,7 +269,7 @@ public class EmployeController implements Initializable {
             email.setText(item.getEmail());
 
         });
-        
+
         Preferences userPreferences = Preferences.userRoot();
         int currentUserId = userPreferences.getInt("currentUserId", 0);
         Employe e = es.findById(currentUserId);

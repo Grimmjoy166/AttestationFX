@@ -55,7 +55,7 @@ public class LoadingController implements Initializable {
                             
                             Scene scene = new Scene(root);
                             Stage stage = new Stage();
-                            stage.setTitle("Attestation Application");
+                            stage.setMaximized(true);
                             stage.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString())); 
                             stage.initStyle(StageStyle.UNDECORATED);
                             stage.setScene(scene);

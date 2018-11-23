@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AttestationReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cf4c4ec8-74e1-463c-bdec-ae772cfe7b51">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="nomComplet" class="java.lang.String"/>
+	<parameter name="lieu" class="java.lang.String"/>
+	<parameter name="dateNaissance" class="java.lang.String"/>
+	<parameter name="numInscription" class="java.lang.String"/>
+	<parameter name="cne" class="java.lang.String"/>
+	<parameter name="niveau" class="java.lang.String"/>
+	<parameter name="dateSortie" class="java.lang.String"/>
+	<parameter name="decision" class="java.lang.String"/>
+	<parameter name="nomResponsable" class="java.lang.String"/>
+	<parameter name="profilResponsable" class="java.lang.String"/>
+	<parameter name="nomEtablissement" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="nomComplet" class="java.lang.String"/>
+	<field name="lieu" class="java.lang.String"/>
+	<field name="dateNaissance" class="java.util.Date"/>
+	<field name="numInscription" class="java.lang.String"/>
+	<field name="cne" class="java.lang.String"/>
+	<field name="niveau" class="java.lang.String"/>
+	<field name="dateSortie" class="java.util.Date"/>
+	<field name="decision" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="167" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement x="130" y="-20" width="300" height="71" uuid="cc2d4a12-d3ce-4e19-a017-36fc5899dea3"/>
+				<imageExpression><![CDATA["src/images/ministre_education_maroc.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="170" y="40" width="220" height="20" uuid="0421cda5-7585-4633-8925-d8cb9b52ad84"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[الأكاديمية الجهوية للتربية والتكوين مراكش أسفي]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="231" y="51" width="100" height="15" uuid="e1c74b1b-7d3c-4b44-b593-cd1fac2ff3d9"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[المديرية الإقليمية للحوز]]></text>
+			</staticText>
+			<frame>
+				<reportElement x="0" y="79" width="113" height="27" uuid="d5399166-4391-467f-af02-eeff67945c2b"/>
+				<box leftPadding="0">
+					<pen lineWidth="1.5"/>
+				</box>
+				<frame>
+					<reportElement x="55" y="0" width="58" height="27" uuid="77a30b14-d283-4f61-8bf2-96f0853af5cc"/>
+					<box leftPadding="0">
+						<pen lineWidth="1.0"/>
+					</box>
+					<staticText>
+						<reportElement x="11" y="4" width="25" height="19" uuid="32371d93-1cfe-4b59-94c3-1ccf6af92281"/>
+						<text><![CDATA[العدد :]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="-39" y="4" width="25" height="19" uuid="2f3c8840-7ceb-429c-9e00-abc160fbcecf"/>
+						<text><![CDATA[2
+]]></text>
+					</staticText>
+				</frame>
+			</frame>
+			<staticText>
+				<reportElement mode="Opaque" x="230" y="129" width="189" height="29" forecolor="#000000" backcolor="#FFF5C9" uuid="64bc7dfa-a1bc-4f97-968b-a7b2e0392ad3"/>
+				<box>
+					<pen lineWidth="1.5" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="18" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[شهادة مدرسيــة رقم  :     ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="132" y="129" width="44" height="30" uuid="af9052d6-14ba-40b4-a73f-191c23f023c2"/>
+				<box>
+					<pen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ait1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="31" y="129" width="100" height="30" backcolor="#FFF5C9" uuid="0b599838-e859-45ca-816c-a64c260d2d0b"/>
+				<box>
+					<pen lineWidth="1.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[18/19
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="180" y="65" width="198" height="30" uuid="354302be-7e14-4ba3-8587-de2e9e8bb947"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{nomEtablissement}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="536" splitType="Stretch">
+			<staticText>
+				<reportElement x="350" y="20" width="180" height="30" uuid="25879767-b3aa-4682-81dc-1d31758e2fdb"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ يشهد الموقع أسفله السيد   :        ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="50" width="130" height="30" uuid="18ea4fbb-03b6-42ba-ada1-91a9c7f9ab32"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[  بصفته              : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="414" y="92" width="130" height="30" uuid="7dea93ad-0c89-44c9-b592-d807eb42d2cf"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[أن التلميذ(ة)  :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="414" y="127" width="130" height="30" uuid="1a81c5a2-47b3-4639-b354-e9122c5f9c01"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[المولـود(ة) ب:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="146" y="122" width="130" height="30" uuid="a48e7e76-d6f0-4926-8af4-1e1336e6ede4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[بتـاريـخ:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="414" y="182" width="130" height="30" uuid="a7b9bc92-d180-4161-a21d-109701c82d5f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[المسجل تحت رقم:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="147" y="185" width="130" height="30" uuid="b1d56aee-c2ad-45a6-949b-dc4b4322e627"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ممنوح]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="17" y="185" width="130" height="30" uuid="46b99da9-5f0f-4d54-ae63-191d3975ec9d"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[غير ممنوح]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="215" width="130" height="30" uuid="234aeeb0-4448-4191-b008-f586c5181113"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[الرقم الوطني:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="243" width="130" height="30" uuid="c462c31d-97ae-40ef-b4f7-5a7a7f26cc06"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ كان يتابع دراسته بقسـم:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="272" width="130" height="30" uuid="05ad20de-fe87-4f68-bf8d-4b57e8c1f87f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ وقد غادر المؤسسة بتاريخ: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="286" y="321" width="206" height="30" uuid="20d464b9-e0f8-4fe8-a227-40a548b6c75d"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ملاحظـات:  سلمـت لـه لأغــراض إداريــة    ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="203" y="383" width="163" height="15" uuid="f3ab3e46-7482-45ec-996f-584a3f728f4a"/>
+				<text><![CDATA[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="217" y="403" width="112" height="30" uuid="dc07514d-0703-4119-879c-82d56c7b1b5f"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[حرر بتحناوت في:]]></text>
+			</staticText>
+			<textField pattern="dd-MM- yyyy">
+				<reportElement x="117" y="400" width="100" height="25" uuid="51e47a14-413f-4158-9659-e14dd9b39c26"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="233" y="426" width="100" height="30" uuid="2dd7616b-8d9b-43a4-8ba7-80bf80554502"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[ختم المؤسسة]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="-16" y="444" width="100" height="30" uuid="659f12d4-a76e-4bae-a20b-1be51abec53e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[المديــر]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="217" y="496" width="240" height="30" uuid="c37ee32d-f679-4ea5-9b24-b2d724cc9c1b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[هذه الشهادة لا تخول التسجيل في مؤسسة أخرى  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="424" y="496" width="100" height="30" uuid="ffc47c40-0739-4935-8863-10b27bbed370"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ملحوظة : ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="310" y="92" width="100" height="30" uuid="ea73eb4a-62ce-4f90-8b2e-6c5b2b1f76ed"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{nomComplet}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="314" y="127" width="100" height="30" uuid="1bd7a147-0689-49ea-be8f-5865745509d4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{lieu}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="41" y="121" width="100" height="30" uuid="11145d96-e7f5-4155-8dfa-e02b53331e3b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{dateNaissance}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="308" y="181" width="100" height="30" uuid="3bf27022-3504-4528-8e0f-b59748ee94ba"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{numInscription}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="310" y="217" width="100" height="30" uuid="5604b324-936c-4974-bb1a-d12dd1bc7ba8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{cne}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="312" y="244" width="100" height="30" uuid="5bbaa8db-ecd6-486f-92f3-bcd1d70fda3e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{niveau}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="311" y="272" width="100" height="30" uuid="f82dd92e-5a72-4bfd-8b3d-8639f7cdb59c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{dateSortie}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="233" y="354" width="100" height="30" uuid="3082e22d-5137-4d2f-aab6-4f1ce498fa27"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{decision}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="245" y="17" width="100" height="30" uuid="3f94d183-bf4d-4b5f-960c-dbd1f8a33df1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{nomResponsable}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="244" y="48" width="100" height="30" uuid="e951d073-2f02-401c-93e2-2d962465e2f9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{profilResponsable}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+</jasperReport>

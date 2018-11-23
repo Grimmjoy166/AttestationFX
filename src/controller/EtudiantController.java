@@ -5,9 +5,11 @@
  */
 package controller;
 
+import antlr.StringUtils;
 import beans.Employe;
 import beans.Etablissement;
 import beans.Etudiant;
+import com.jfoenix.controls.JFXComboBox;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,18 +21,23 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -39,13 +46,19 @@ import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import notification.Notification;
 import notification.Notifications;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.util.StringUtil;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import service.EmployeService;
@@ -68,6 +81,7 @@ public class EtudiantController implements Initializable {
 
     ObservableList<Etudiant> etudiants = FXCollections.observableArrayList();
     ObservableList<Etablissement> etablissemnts = FXCollections.observableArrayList();
+    ObservableList<String> decisions = FXCollections.observableArrayList();
 
     //inner static varriable
     private static int index;
@@ -75,12 +89,11 @@ public class EtudiantController implements Initializable {
     private static Etablissement currentEtab;
 
     Date dt = new Date();
+    Date dt2 = new Date();
 
     //Fields
     @FXML
-    private TextField nom;
-    @FXML
-    private TextField prenom;
+    private TextField nomComplet;
     @FXML
     private DatePicker date;
     @FXML
@@ -90,13 +103,19 @@ public class EtudiantController implements Initializable {
     @FXML
     private TextField niveau;
     @FXML
-    private ComboBox<Etablissement> etablissement;
+    private TextField numInscription;
+    @FXML
+    private ComboBox<String> decision;
+    @FXML
+    private DatePicker dateSortie;
+    @FXML
+    private TextField numDossier;
+    @FXML
+    private JFXComboBox<Etablissement> etablissement;
     @FXML
     private TableView<Etudiant> mTable;
     @FXML
-    private TableColumn<Etudiant, String> nomColumn;
-    @FXML
-    private TableColumn<Etudiant, String> prenomColumn;
+    private TableColumn<Etudiant, String> nomCompletColumn;
     @FXML
     private TableColumn<Etudiant, LocalDate> dateColumn;
     @FXML
@@ -106,28 +125,51 @@ public class EtudiantController implements Initializable {
     @FXML
     private TableColumn<Etudiant, String> niveauColumn;
     @FXML
+    private TableColumn<Etudiant, String> numInscriptionColumn;
+    @FXML
+    private TableColumn<Etudiant, String> decisionColumn;
+    @FXML
+    private TableColumn<Etudiant, Integer> numDossierColumn;
+    @FXML
+    private TableColumn<Etudiant, LocalDate> dateSortieColumn;
+    @FXML
     private TableColumn<Etudiant, Etablissement> etablissementColumn;
+    @FXML
+    private Button importeFileBtn;
 
     //FXML Methods
     @FXML
     private void saveAction(ActionEvent e) {
         Instant instant = Instant.from(date.getValue().atStartOfDay(ZoneId.systemDefault()));
         dt = Date.from(instant);
+        Instant instant2 = Instant.from(dateSortie.getValue().atStartOfDay(ZoneId.systemDefault()));
+        dt2 = Date.from(instant2);
 
-        es.create(new Etudiant(nom.getText(), prenom.getText(), dt, lieu.getText(), cne.getText(), niveau.getText(), ets.findById(selectedEtablissementId)));
+        es.create(new Etudiant(nomComplet.getText(), dt, lieu.getText(), cne.getText(), niveau.getText(), numInscription.getText(), decision.getSelectionModel().getSelectedItem(), Integer.parseInt(numDossier.getText()), dt2, ets.findById(selectedEtablissementId)));
         init();
         clearFields();
     }
 
     @FXML
-    private void deleteAction(ActionEvent e) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد الحدف");
-        alert.setContentText("هل تريد حدف هذا التلميذ ؟");
+    private void deleteAction(ActionEvent e) throws IOException {
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل تريد حدف هذا التلميذ ؟");
+        controller.setmTitle("تأكيد الحدف");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             es.delete(es.findById(index));
             init();
             clearFields();
@@ -135,22 +177,40 @@ public class EtudiantController implements Initializable {
     }
 
     @FXML
-    private void updateAction(ActionEvent e) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد التغيير");
-        alert.setContentText("هل تريد تغيير معلومات هذا الطالب ؟");
+    private void updateAction(ActionEvent e) throws IOException {
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل تريد تغيير معلومات هذا التلميذ ؟");
+        controller.setmTitle("تأكيد التغيير");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
+            Instant instant = Instant.from(date.getValue().atStartOfDay(ZoneId.systemDefault()));
+            dt = Date.from(instant);
+            Instant instant2 = Instant.from(dateSortie.getValue().atStartOfDay(ZoneId.systemDefault()));
+            dt2 = Date.from(instant2);
 
             Etudiant et = es.findById(index);
-            et.setNom(nom.getText());
-            et.setPrenom(prenom.getText());
+            et.setNomComplet(nomComplet.getText());
             et.setDateNaissance(dt);
             et.setLieuNaissance(lieu.getText());
             et.setCne(cne.getText());
             et.setNiveauEtude(niveau.getText());
+            et.setNumInscription(numInscription.getText());
+            et.setDecision(decision.getSelectionModel().getSelectedItem());
+            et.setNumDossier(Integer.parseInt(numDossier.getText()));
+            et.setDateSortie(dt2);
             et.setEtablissement(ets.findById(selectedEtablissementId));
             es.update(et);
             init();
@@ -163,7 +223,7 @@ public class EtudiantController implements Initializable {
         FileChooser fc = new FileChooser();
 
         fc.setTitle("قم باختيار الملف");
-        fc.setInitialDirectory(new File("C:\\Users\\Sinponzakra\\Desktop"));
+        // fc.setInitialDirectory(new File("C:\\Users\\Sinponzakra\\Desktop"));
         fc.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Fichier Excel", "*.xlsx"),
                 new FileChooser.ExtensionFilter("Fichier CSV", "*.csv")
@@ -180,42 +240,78 @@ public class EtudiantController implements Initializable {
 
     }
 
+    private boolean isValideNumInscription(String numInscription) {
+        String res = numInscription.replaceAll("[0-9-\\/]", "");
+        if (res.length() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    List<String> formatStrings = Arrays.asList("dd-MMM-yyyy", "dd-MM-yyyy");
+
+    private Date tryParse(String dateString) {
+        for (String formatString : formatStrings) {
+            try {
+                return new SimpleDateFormat(formatString, Locale.FRENCH).parse(dateString);
+            } catch (ParseException e) {
+            }
+        }
+
+        return null;
+    }
+
     private void saveFromFile(File mFile) throws FileNotFoundException, IOException, ParseException {
         FileInputStream file = new FileInputStream(mFile);
         XSSFWorkbook workbook = new XSSFWorkbook(file);
         XSSFSheet sheet = workbook.getSheetAt(1);
 
+        String errors = "";
         int EtudAdded = 0;
         Row row;
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
             if (sheet.getRow(i) != null) {
                 row = (Row) sheet.getRow(i);
 
-                String nom, prenom;
-                if (row.getCell(2) == null) {
-                    nom = null;
-                    prenom = null;
+                String numInscription = "";
+                if (row.getCell(1) == null || row.getCell(1).toString().equals("")) {
+                    errors += " Error Row :" + i + " Cell :" + 1;
+                    continue;
                 } else {
-                    int firstOccurence = row.getCell(2).toString().indexOf(' ');
-                    if (firstOccurence == -1) {
-                        break;
+                    if (isValideNumInscription(row.getCell(1).toString())) {
+                        numInscription = row.getCell(1).toString();
+                    } else {
+                        errors += "Invalide numInscription at row :" + i + " Cell :" + 1;
+                        continue;
                     }
-                    //System.out.println(firstOccurence);
-                    nom = row.getCell(2).toString().substring(firstOccurence);
-                    prenom = row.getCell(2).toString().substring(0, firstOccurence);
-
                 }
-               // System.out.println("nom : " + nom + " | prenom :" + prenom);
+
+                String nomComplet;
+                if (row.getCell(2) == null) {
+                    nomComplet = null;
+                } else {
+                    nomComplet = row.getCell(2).toString();
+                }
 
                 Date dt;
                 if (row.getCell(3) == null) {
                     dt = null;
                 } else {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.FRENCH);
-                    dt = sdf.parse(row.getCell(3).toString());
+
+                    dt = tryParse(row.getCell(3).toString());
 
                 }
-               // System.out.println("Date Naissance :" + dt);
+                // System.out.println("Date Naissance :" + dt);
+                
+                 Date dt2;
+                if (row.getCell(7) == null) {
+                    dt2 = null;
+                } else {
+
+                    dt2 = tryParse(row.getCell(7).toString());
+
+                }
 
                 String lieu;
                 if (row.getCell(4) == null) {
@@ -224,17 +320,16 @@ public class EtudiantController implements Initializable {
                     lieu = row.getCell(4).toString();
 
                 }
-               // System.out.println("lieu :" + lieu);
+                // System.out.println("lieu :" + lieu);
 
                 String cne;
                 if (row.getCell(6) == null) {
                     cne = null;
                 } else {
                     cne = row.getCell(6).toString().replaceAll("\\.", "");
-                    
-                 
+
                 }
-               // System.out.println("cne : " + cne);
+                // System.out.println("cne : " + cne);
 
                 String niveau;
                 if (row.getCell(5) == null) {
@@ -242,54 +337,74 @@ public class EtudiantController implements Initializable {
                 } else {
                     niveau = row.getCell(5).toString();
                 }
-               // System.out.println("niveau : " + niveau);
+                // System.out.println("niveau : " + niveau);
+
+                String decision = "";
+                if (row.getCell(8) == null) {
+                    decision = null;
+                } else {
+                    decision = row.getCell(8).toString();
+                }
+
+                int numDossier = -1;
+                if (row.getCell(9) == null) {
+                    numDossier = -1;
+                } else {
+                    Double getNumber = Double.parseDouble(row.getCell(9).toString());
+                    numDossier = getNumber.intValue();
+                }
                 
-                if(es.isNotExist(nom, prenom, dt)) {
-                    Etudiant e = new Etudiant(nom, prenom, dt, lieu, cne, niveau, currentEtab);
+                
+
+                if (es.isNotExist(nomComplet, dt)) {
+                    Etudiant e = new Etudiant(nomComplet, dt, lieu, cne, niveau, numInscription, decision, numDossier, dt2,currentEtab);
                     es.create(e);
                     init();
                     EtudAdded++;
+                } else {
+                    continue;
                 }
-                
+
             } else {
                 break;
             }
 
         }
-        
-            if(EtudAdded != 0){        
-                    String title = "إعلام";
-                    String message = "لقد تمت الإضافة بنجاح";
-        
-                    TrayNotification tray = new TrayNotification();
-                    tray.setTitle(title);
-                    tray.setMessage(message);
-                    tray.setRectangleFill(Paint.valueOf("#2A9A84"));
-                    tray.setAnimationType(AnimationType.POPUP);
-                    tray.setNotificationType(NotificationType.SUCCESS);
-                    tray.showAndDismiss(Duration.seconds(3));
-            } else {
-                    String title = "إعلام";
-                    String message = "ليس هناك أي تحديث متاح";
-        
-                    TrayNotification tray = new TrayNotification();
-                    tray.setTitle(title);
-                    tray.setMessage(message);
-                    tray.setRectangleFill(Paint.valueOf("#f44248"));
-                    tray.setAnimationType(AnimationType.POPUP);
-                    tray.setNotificationType(NotificationType.ERROR);
-                    tray.showAndDismiss(Duration.seconds(3)); 
-            }
+
+        if (EtudAdded != 0) {
+            String title = "إعلام";
+            String message = "لقد تمت الإضافة بنجاح";
+
+            TrayNotification tray = new TrayNotification();
+            tray.setTitle(title);
+            tray.setMessage(message);
+            tray.setRectangleFill(Paint.valueOf("#2A9A84"));
+            tray.setAnimationType(AnimationType.POPUP);
+            tray.setNotificationType(NotificationType.SUCCESS);
+            tray.showAndDismiss(Duration.seconds(3));
+        } else {
+            String title = "إعلام";
+            String message = "ليس هناك أي تحديث متاح";
+
+            TrayNotification tray = new TrayNotification();
+            tray.setTitle(title);
+            tray.setMessage(message);
+            tray.setRectangleFill(Paint.valueOf("#f44248"));
+            tray.setAnimationType(AnimationType.POPUP);
+            tray.setNotificationType(NotificationType.ERROR);
+            tray.showAndDismiss(Duration.seconds(3));
+        }
     }
 
     //clear Fields function
     public void clearFields() {
-        nom.clear();
-        prenom.clear();
+        nomComplet.clear();
         date.setValue(null);
         lieu.clear();
         cne.clear();
         niveau.clear();
+        numInscription.clear();
+        dateSortie.setValue(null);
         etablissement.getSelectionModel().clearSelection();
     }
 
@@ -297,13 +412,17 @@ public class EtudiantController implements Initializable {
     private void init() {
         etudiants.clear();
         etablissemnts.clear();
+        decisions.clear();
 
-        nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        prenomColumn.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+        nomCompletColumn.setCellValueFactory(new PropertyValueFactory<>("nomComplet"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateNaissance"));
         lieuColumn.setCellValueFactory(new PropertyValueFactory<>("lieuNaissance"));
         cneColumn.setCellValueFactory(new PropertyValueFactory<>("cne"));
         niveauColumn.setCellValueFactory(new PropertyValueFactory<>("niveauEtude"));
+        numInscriptionColumn.setCellValueFactory(new PropertyValueFactory<>("numInscription"));
+        decisionColumn.setCellValueFactory(new PropertyValueFactory<>("decision"));
+        numDossierColumn.setCellValueFactory(new PropertyValueFactory<>("numDossier"));
+        dateSortieColumn.setCellValueFactory(new PropertyValueFactory<>("dateSortie"));
         etablissementColumn.setCellValueFactory(new PropertyValueFactory<>("etablissement"));
 
         if (es.findAll() != null) {
@@ -314,6 +433,9 @@ public class EtudiantController implements Initializable {
             etablissemnts.addAll(ets.findAll());
         }
 
+        decisions.addAll("تشطيب", "يفصل", "انتقل و لم يلتحق", "ناجح", "تكرار وعدم الإلتحاق", "ناجحة في امتحان البكالوريا");
+
+        decision.setItems(decisions);
         etablissement.setItems(etablissemnts);
         mTable.setItems(etudiants);
 
@@ -338,19 +460,25 @@ public class EtudiantController implements Initializable {
             Etudiant item = mTable.getItems().get(row);
             index = item.getId();
 
-            nom.setText(item.getNom());
-            prenom.setText(item.getPrenom());
+            nomComplet.setText(item.getNomComplet());
 
             Date dts = item.getDateNaissance();
+            Date dts2 = item.getDateSortie();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             LocalDate localDate = LocalDate.parse(sdf.format(dts), formatter);
+            LocalDate localDate2 = LocalDate.parse(sdf.format(dts2), formatter);
 
             date.setValue(localDate);
+            dateSortie.setValue(localDate2);
 
             lieu.setText(item.getLieuNaissance());
             cne.setText(item.getCne());
             niveau.setText(item.getNiveauEtude());
+            numInscription.setText(item.getNumInscription());
+
+            decision.getSelectionModel().select(item.getDecision());
+            numDossier.setText(String.valueOf(item.getNumDossier()));
             etablissement.getSelectionModel().select(item.getEtablissement());
         });
 
@@ -359,6 +487,10 @@ public class EtudiantController implements Initializable {
         Employe e = eps.findById(currentUserId);
         currentEtab = e.getEtablissement();
         etablissement.getSelectionModel().select(currentEtab);
+
+        if(!e.getProfil().getLibelle().equals("مدير")){
+            importeFileBtn.setVisible(false);
+        }
     }
 
 }

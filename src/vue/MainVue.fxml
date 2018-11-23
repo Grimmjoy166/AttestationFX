@@ -2,9 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.effect.InnerShadow?>
@@ -140,14 +138,7 @@
          <children>
             <VBox prefHeight="347.0" prefWidth="1062.0">
                <children>
-                  <BarChart fx:id="mChart" nodeOrientation="RIGHT_TO_LEFT" prefHeight="270.0" prefWidth="1022.0" title="رسم بياني">
-                    <xAxis>
-                      <CategoryAxis fx:id="mChartEtab" label="المؤسسات" side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis fx:id="mChartEtud" label="التلاميذ" side="LEFT" />
-                    </yAxis>
-                  </BarChart>
+                  <PieChart fx:id="mChart" />
                </children>
             </VBox>
             <VBox prefHeight="130.0" prefWidth="1062.0">
@@ -183,7 +174,7 @@
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </padding>
                                  <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 1.6em; -fx-fill: white;" text="عدد العمال" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 1.6em; -fx-fill: white;" text="عدد الموظفين" />
                                  </children>
                               </HBox>
                               <StackPane styleClass="tickets">
@@ -223,28 +214,6 @@
                               </StackPane>
                            </children>
                         </VBox>
-                        <VBox fx:id="etablissementTicket" alignment="CENTER" layoutX="450.0" layoutY="20.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="250.0" prefWidth="250.0" style="-fx-background-color: #e6e6e6; -fx-cursor: hand; -fx-background-radius: 2em;">
-                           <children>
-                              <HBox alignment="CENTER" style="-fx-background-color: #008000; -fx-background-radius: 3em;" styleClass="headerTickets">
-                                 <padding>
-                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                 </padding>
-                                 <children>
-                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 1.6em; -fx-fill: white;" text="عدد المؤسسات" />
-                                 </children>
-                              </HBox>
-                              <StackPane styleClass="tickets">
-                                 <children>
-                                    <Circle fill="DODGERBLUE" radius="70.0" stroke="GREEN" strokeType="INSIDE" strokeWidth="11.0" style="-fx-fill: transparent;">
-                                       <StackPane.margin>
-                                          <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
-                                       </StackPane.margin>
-                                    </Circle>
-                                    <Text fx:id="etablissementCount" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 1.5em; -fx-font-weight: bolder; -fx-fill: green;" text="10" />
-                                 </children>
-                              </StackPane>
-                           </children>
-                        </VBox>
                      </children>
                   </HBox>
                </children>
@@ -256,7 +225,7 @@
       <VBox BorderPane.alignment="CENTER" />
    </left>
    <right>
-      <VBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="464.0" prefWidth="156.0" styleClass="menu">
+      <VBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="464.0" prefWidth="160.0" styleClass="menu">
          <children>
             <Separator layoutX="10.0" layoutY="47.0" maxWidth="1.7976931348623157E308" />
             <JFXButton fx:id="homeScene" contentDisplay="RIGHT" maxWidth="1.7976931348623157E308" onAction="#switchtoHome" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="الواجهة" textFill="WHITE">
@@ -267,32 +236,6 @@
                   <ImageView fitHeight="28.0" fitWidth="54.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/home.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </JFXButton>
-            <Separator maxWidth="1.7976931348623157E308" />
-            <JFXButton fx:id="employeScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="17.0" maxWidth="1.7976931348623157E308" onAction="#switchtoEmploye" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="الموظفين" textFill="WHITE">
-               <font>
-                  <Font name="Arial Bold" size="18.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/employee.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </JFXButton>
-            <Separator maxWidth="1.7976931348623157E308" />
-            <JFXButton fx:id="profilScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="17.0" maxWidth="1.7976931348623157E308" onAction="#switchtoProfil" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="الوظائف" textFill="WHITE">
-               <font>
-                  <Font name="Arial Bold" size="18.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/interview.png" />
                      </image>
                   </ImageView>
                </graphic>
@@ -311,20 +254,7 @@
                </graphic>
             </JFXButton>
             <Separator maxWidth="1.7976931348623157E308" />
-            <JFXButton fx:id="etablissementScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="185.0" maxWidth="1.7976931348623157E308" onAction="#switchEtablissement" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="المؤسسات" textFill="WHITE">
-               <font>
-                  <Font name="Arial Bold" size="18.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="28.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/university-campus.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </JFXButton>
-            <Separator />
-            <JFXButton fx:id="searchScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="241.0" maxWidth="1.7976931348623157E308" onAction="#switchSearch" prefHeight="53.0" prefWidth="164.0" styleClass="menuBtn" text="البحث عن تلميذ" textFill="WHITE">
+            <JFXButton fx:id="searchScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="241.0" maxWidth="1.7976931348623157E308" onAction="#switchSearch" prefHeight="53.0" prefWidth="164.0" styleClass="menuBtn" text="البحث " textFill="WHITE" wrapText="true">
                <font>
                   <Font name="Arial Bold" size="18.0" />
                </font>
@@ -337,6 +267,58 @@
                </graphic>
             </JFXButton>
             <Separator maxWidth="1.7976931348623157E308" />
+            <JFXButton fx:id="chartsScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="297.0" maxWidth="1.7976931348623157E308" onAction="#switchCharts" prefHeight="53.0" prefWidth="164.0" styleClass="menuBtn" text="الرسوم البيانية" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font name="Arial Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="34.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/pie-chart.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+            <Separator maxWidth="1.7976931348623157E308" />
+            <JFXButton fx:id="employeScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="17.0" maxWidth="1.7976931348623157E308" onAction="#switchtoEmploye" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="الموظفين" textFill="WHITE">
+               <font>
+                  <Font name="Arial Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/employee.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+            <Separator fx:id="separator1" prefWidth="200.0" />
+            <JFXButton fx:id="profilScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="17.0" maxWidth="1.7976931348623157E308" onAction="#switchtoProfil" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="الوظائف" textFill="WHITE">
+               <font>
+                  <Font name="Arial Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="34.0" fitWidth="34.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/interview.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+            <Separator fx:id="separator2" maxWidth="1.7976931348623157E308" />
+            <JFXButton fx:id="etablissementScene" contentDisplay="RIGHT" layoutX="18.0" layoutY="185.0" maxWidth="1.7976931348623157E308" onAction="#switchEtablissement" prefHeight="53.0" prefWidth="108.0" styleClass="menuBtn" text="المؤسسة" textFill="WHITE">
+               <font>
+                  <Font name="Arial Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="28.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/university-campus.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </JFXButton>
+            <Separator fx:id="separator3" />
          </children>
       </VBox>
    </right>

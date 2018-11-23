@@ -64,6 +64,10 @@
     -fx-cursor: hand;
 }
 
+.menuBtn:active{
+    -fx-background-color: #ff8533;
+}
+
 #logOutBtn {
     -fx-cursor: hand;
 }
@@ -101,4 +105,53 @@
 #btnLogin {
     -fx-font-weight : bold;
     -fx-text-fill: #ffffff;
+}
+
+.table-view .column-header {
+ -fx-font-weight: bold;
+   -fx-background-color: #2D3442;
+}
+
+.table-view .column-header .text {
+  -fx-underline: true;
+  -fx-font-size : 15px;
+  -fx-fill: #ffffff;
+}
+
+.table-cell {
+    -fx-alignment: BASELINE_CENTER;
+ }
+ 
+ .table-view:row-selection .table-row-cell:filled:hover {
+    -fx-background-color: #ff8533;
+    -fx-background-insets: 0.0, 0.0 0.0 0.0 0.0;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.table-view:focused .table-row-cell:filled:selected {
+    -fx-background-color: #BCD4E5;
+    -fx-background-insets: 0.0, 0.0 0.0 0.0 0.0;
+    -fx-text-fill: -fx-selection-bar-text;
+    -fx-table-cell-border-color: #E0F2FF;
+}
+
+.tableView {
+ -fx-font-size: 8.0pt;
+}
+
+.table-view *.scroll-bar:horizontal *.increment-button,
+.table-view *.scroll-bar:horizontal *.decrement-button {
+    -fx-background-color: null;
+    -fx-background-radius: 0.0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
+}
+
+.table-view *.scroll-bar:horizontal *.increment-arrow, 
+.table-view *.scroll-bar:horizontal *.decrement-arrow {
+    -fx-background-color: null;
+    -fx-background-radius: 0.0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
+    -fx-shape: null;
 }

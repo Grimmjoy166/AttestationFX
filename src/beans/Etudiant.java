@@ -22,37 +22,47 @@ public class Etudiant {
     @Id
     @GeneratedValue
     private int id;
-    private String nom;
-    private String prenom;
+    private String nomComplet;
     @Temporal(TemporalType.DATE)
     private Date dateNaissance;
     private String lieuNaissance;
     private String cne;
     private String niveauEtude;
+    private String numInscription;
+    private String decision;
+    private int numDossier;
+    @Temporal(TemporalType.DATE)
+    private Date dateSortie;
     @ManyToOne
     private Etablissement etablissement;
 
     public Etudiant() {
     }
 
-    public Etudiant(int id, String nom, String prenom, Date dateNaissance, String lieuNaissance, String cne, String niveauEtude, Etablissement etablissement) {
+    public Etudiant(int id,String nomComplet, Date dateNaissance, String lieuNaissance, String cne, String niveauEtude, String numInscription, String decision, int numDossier, Date dateSortie, Etablissement etablissement) {
         this.id = id;
-        this.nom = nom;
-        this.prenom = prenom;
+        this.nomComplet = nomComplet;
         this.dateNaissance = dateNaissance;
         this.lieuNaissance = lieuNaissance;
         this.cne = cne;
         this.niveauEtude = niveauEtude;
+        this.numInscription = numInscription;
+        this.decision = decision;
+        this.numDossier = numDossier;
+        this.dateSortie = dateSortie;
         this.etablissement = etablissement;
     }
 
-    public Etudiant(String nom, String prenom, Date dateNaissance, String lieuNaissance, String cne, String niveauEtude, Etablissement etablissement) {
-        this.nom = nom;
-        this.prenom = prenom;
+    public Etudiant(String nomComplet, Date dateNaissance, String lieuNaissance, String cne, String niveauEtude,String numInscription , String decision, int numDossier, Date dateSortie, Etablissement etablissement) {
+        this.nomComplet = nomComplet;
         this.dateNaissance = dateNaissance;
         this.lieuNaissance = lieuNaissance;
         this.cne = cne;
         this.niveauEtude = niveauEtude;
+        this.numInscription = numInscription;
+        this.decision = decision;
+        this.numDossier = numDossier;
+        this.dateSortie = dateSortie;
         this.etablissement = etablissement;
     }
 
@@ -64,20 +74,12 @@ public class Etudiant {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+    public String getNomComplet() {
+        return nomComplet;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public void setNomComplet(String nomComplet) {
+        this.nomComplet = nomComplet;
     }
 
     public Date getDateNaissance() {
@@ -112,6 +114,38 @@ public class Etudiant {
         this.niveauEtude = niveauEtude;
     }
 
+    public String getNumInscription() {
+        return numInscription;
+    }
+
+    public void setNumInscription(String numInscription) {
+        this.numInscription = numInscription;
+    }
+
+    public String getDecision() {
+        return decision;
+    }
+
+    public void setDecision(String decision) {
+        this.decision = decision;
+    }
+
+    public int getNumDossier() {
+        return numDossier;
+    }
+
+    public void setNumDossier(int numDossier) {
+        this.numDossier = numDossier;
+    }
+
+    public Date getDateSortie() {
+        return dateSortie;
+    }
+
+    public void setDateSortie(Date dateSortie) {
+        this.dateSortie = dateSortie;
+    }
+    
     public Etablissement getEtablissement() {
         return etablissement;
     }
@@ -122,7 +156,7 @@ public class Etudiant {
 
     @Override
     public String toString() {
-        return this.nom+this.prenom;
+        return this.nomComplet;
     }
     
     

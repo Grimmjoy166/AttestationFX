@@ -14,8 +14,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,6 +31,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 import service.EmployeService;
 import service.EtablissementService;
 import service.EtudiantService;
@@ -61,9 +73,7 @@ public class SearchController implements Initializable {
     @FXML
     private TableView<Etudiant> mTable;
     @FXML
-    private TableColumn<Etudiant, String> nomColumn;
-    @FXML
-    private TableColumn<Etudiant, String> prenomColumn;
+    private TableColumn<Etudiant, String> nomCompletColumn;
     @FXML
     private TableColumn<Etudiant, LocalDate> dateColumn;
     
@@ -71,9 +81,7 @@ public class SearchController implements Initializable {
     @FXML
     private TableView<Etudiant> mTable1;
     @FXML
-    private TableColumn<Etudiant, String> nomColumn1;
-    @FXML
-    private TableColumn<Etudiant, String> prenomColumn1;
+    private TableColumn<Etudiant, String> nomCompletColumn1;
     @FXML
     private TableColumn<Etudiant, LocalDate> dateColumn1;
     @FXML
@@ -83,21 +91,28 @@ public class SearchController implements Initializable {
     @FXML
     private TableColumn<Etudiant, String> niveauColumn1;
     @FXML
+    private TableColumn<Etudiant, String> numInscriptionColumn1;
+    @FXML
+    private TableColumn<Etudiant, String> decisionColumn1;
+    @FXML
+    private TableColumn<Etudiant, Integer> numDossierColumn1;
+    @FXML
     private TableColumn<Etudiant, Etablissement> etablissementColumn1;
     
     private void configTableColumn() {
-        nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        prenomColumn.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+        nomCompletColumn.setCellValueFactory(new PropertyValueFactory<>("nomComplet"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateNaissance"));
         
         
         
-        nomColumn1.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        prenomColumn1.setCellValueFactory(new PropertyValueFactory<>("prenom"));
+        nomCompletColumn1.setCellValueFactory(new PropertyValueFactory<>("nomComplet"));
         dateColumn1.setCellValueFactory(new PropertyValueFactory<>("dateNaissance"));
         lieuColumn1.setCellValueFactory(new PropertyValueFactory<>("lieuNaissance"));
         cneColumn1.setCellValueFactory(new PropertyValueFactory<>("cne"));
         niveauColumn1.setCellValueFactory(new PropertyValueFactory<>("niveauEtude"));
+        numInscriptionColumn1.setCellValueFactory(new PropertyValueFactory<>("numInscription"));
+        decisionColumn1.setCellValueFactory(new PropertyValueFactory<>("decision"));
+        numDossierColumn1.setCellValueFactory(new PropertyValueFactory<>("numDossier"));
         etablissementColumn1.setCellValueFactory(new PropertyValueFactory<>("etablissement"));
     }
     
@@ -135,7 +150,8 @@ public class SearchController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
         mTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
+        mTable1.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         
         mTable.setOnMousePressed(e -> {
             TablePosition pos = (TablePosition) mTable.getSelectionModel().getSelectedCells().get(0);
@@ -145,6 +161,41 @@ public class SearchController implements Initializable {
             
             fillTab2(item);
                
+        });
+        
+        mTable1.setOnMousePressed(e -> {
+            try {
+                TablePosition pos = (TablePosition) mTable1.getSelectionModel().getSelectedCells().get(0);
+                int row = pos.getRow();
+                Etudiant item = mTable1.getItems().get(row);
+                
+                Preferences userPreferences = Preferences.userRoot();
+                int currentUserId = userPreferences.getInt("currentUserId", 0);
+
+                Employe currentEmploye = eps.findById(currentUserId);
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            
+                JasperReport jr = JasperCompileManager.compileReport("src/report/AttestationReport.jrxml");
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                parameters.put("nomComplet", item.getNomComplet());
+                parameters.put("lieu", item.getLieuNaissance());
+                parameters.put("dateNaissance", sdf.format(item.getDateNaissance()).toString() );
+                parameters.put("numInscription", item.getNumInscription());
+                parameters.put("cne", item.getCne());
+                parameters.put("niveau", item.getNiveauEtude());
+                parameters.put("dateSortie", sdf.format(item.getDateSortie()).toString() );
+                parameters.put("decision", item.getDecision());
+                parameters.put("nomResponsable", currentEmploye.getNom()+" "+currentEmploye.getPrenom());
+                parameters.put("profilResponsable", currentEmploye.getProfil().getLibelle());
+                parameters.put("nomEtablissement", currentEmploye.getEtablissement().getNom());
+                
+                JRDataSource dataSource = new JREmptyDataSource();
+                JasperPrint jp = JasperFillManager.fillReport(jr, parameters, dataSource);
+                JasperViewer.viewReport(jp, false);
+            } catch (JRException ex) {
+                Logger.getLogger(SearchController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
       
         nom.textProperty().addListener(e -> {

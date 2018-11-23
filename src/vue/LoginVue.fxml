@@ -81,12 +81,12 @@
             <Font name="Arial Bold Italic" size="16.0" />
          </font>
       </JFXButton>
-      <Label fx:id="usernameError" layoutX="626.0" layoutY="251.0" text="- Username Invalide!" textFill="RED" visible="false">
+      <Label fx:id="usernameError" layoutX="108.0" layoutY="243.0" text="البريد الإلكتروني غير صحيح" textFill="RED" visible="false">
          <font>
             <Font name="Arial Bold Italic" size="13.0" />
          </font>
       </Label>
-      <Label fx:id="passwordError" layoutX="627.0" layoutY="309.0" text="- Password Invalide!" textFill="RED" visible="false">
+      <Label fx:id="passwordError" layoutX="109.0" layoutY="301.0" text="كلمة المرور غير صحيحة" textFill="RED" visible="false">
          <font>
             <Font name="Arial Bold Italic" size="13.0" />
          </font>

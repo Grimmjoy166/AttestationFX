@@ -12,6 +12,7 @@ import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import java.io.IOException;
 import java.net.URL;
+import java.security.Key;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,7 +97,12 @@ public class LoginController implements Initializable {
         });
 
         btnLogin.setOnAction(e -> {
-            String mUsername = username.getText();
+           Authentification();
+        });
+    }
+    
+    private void Authentification() {
+         String mUsername = username.getText();
             String mPassword = password.getText();
 
             emp = es.CheckLogin(mUsername);
@@ -122,7 +128,6 @@ public class LoginController implements Initializable {
                 }
             }
 
-        });
     }
 
     private void LoadingTransition() {
@@ -147,7 +152,6 @@ public class LoginController implements Initializable {
         Preferences userPreferences = Preferences.userRoot();
         userPreferences.putInt("currentUserId", emp.getId());
         
-
         if (rememberMe.isSelected()) {
             userPreferences.putBoolean("rememberMe", true);
         } else {

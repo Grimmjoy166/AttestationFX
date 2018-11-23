@@ -6,22 +6,27 @@
 package controller;
 
 import beans.Etablissement;
-import beans.Profil;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import service.EtablissementService;
 
 /**
@@ -41,6 +46,8 @@ public class EtablissementController implements Initializable {
     @FXML
     private TextField region;
     @FXML
+    private Button btnAdd;
+    @FXML
     private TableView<Etablissement> mTable;
     @FXML
     private TableColumn<Etablissement, String> nomColumn;
@@ -54,32 +61,56 @@ public class EtablissementController implements Initializable {
         es.create(new Etablissement(nom.getText(), type.getText(), region.getText()));
         init();
         clearFields();
+        checkRowCount();
     }
 
     @FXML
-    private void deleteAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد الحدف");
-        alert.setContentText("هل حقا تريد حدف هده المؤسسة ؟");
+    private void deleteAction(ActionEvent event) throws IOException {
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل حقا تريد حدف هده المؤسسة ؟");
+        controller.setmTitle("تأكيد الحدف");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             es.delete(es.findById(index));
             init();
             clearFields();
+            checkRowCount();
         }
     }
-    
-     @FXML
-    private void updateAction(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("تأكيد");
-        alert.setHeaderText("تأكيد التغيير");
-        alert.setContentText("هل تريد حقا تغيير معلومات هذه المؤسسة ؟");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+    @FXML
+    private void updateAction(ActionEvent event) throws IOException {
+
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ConfirmBoxVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        ConfirmBoxController controller = fxmlLoader.<ConfirmBoxController>getController();
+        controller.setmMessage("هل تريد حقا تغيير معلومات هذه المؤسسة ؟");
+        controller.setmTitle("تأكيد التغيير");
+
+        Scene scene = new Scene(root);
+
+        window.setScene(scene);
+        window.showAndWait();
+
+        if (controller.getCurrentState()) {
             Etablissement e = es.findById(index);
             e.setNom(nom.getText());
             e.setType(type.getText());
@@ -87,6 +118,15 @@ public class EtablissementController implements Initializable {
             es.update(e);
             init();
             clearFields();
+        }
+    }
+    
+    private void checkRowCount() {
+        
+       if(es.getEtablissementsCount() == 1) {
+            btnAdd.setDisable(true);
+        }else {
+            btnAdd.setDisable(false);
         }
     }
 
@@ -97,14 +137,15 @@ public class EtablissementController implements Initializable {
     }
 
     private void init() {
+        
         etablissements.clear();
         nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         regionColumn.setCellValueFactory(new PropertyValueFactory<>("region"));
 
-        if (es.findAll() != null)
+        if (es.findAll() != null) {
             etablissements.addAll(es.findAll());
-        
+        }
 
         mTable.setItems(etablissements);
     }
@@ -114,18 +155,20 @@ public class EtablissementController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-       init();
+        init();
         mTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        mTable.setOnMousePressed(e-> {
+        mTable.setOnMousePressed(e -> {
             TablePosition pos = (TablePosition) mTable.getSelectionModel().getSelectedCells().get(0);
             int row = pos.getRow();
             Etablissement item = mTable.getItems().get(row);
             index = item.getId();
-            
+
             nom.setText(item.getNom());
             type.setText(item.getType());
             region.setText(item.getRegion());
         });
+        
+        checkRowCount();
     }
 
 }
