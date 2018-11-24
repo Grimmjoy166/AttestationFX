@@ -6,9 +6,11 @@
 package controller;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -28,6 +31,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import service.EmployeService;
 import service.EtudiantService;
 
@@ -71,13 +75,23 @@ public class ChartsController implements Initializable {
     private void setChart() {
         chart.setTitle("عدد التلاميذ في مستويات الدراسة");
         for (Object[] o : es.getPieChartData()) {
-            if (!o[0].toString().equals("")) {
+            if (!o[0].toString().equals("") || o[0] != null) {
                 pieChartData.add(
                         new PieChart.Data(o[0].toString(), Integer.parseInt(o[1].toString())));
             }
         }
 
         chart.getData().addAll(pieChartData);
+
+        chart.getData().forEach(d -> {
+            Optional<Node> opTextNode = chart.lookupAll(".chart-pie-label").stream().filter(n -> n instanceof Text && ((Text) n).getText().contains(d.getName())).findAny();
+            if (opTextNode.isPresent()) {
+                Double res = ((d.getPieValue() / es.getEtudiantsCount()) * 100);
+                DecimalFormat df = new DecimalFormat();
+                df.setMaximumFractionDigits(0);
+                ((Text) opTextNode.get()).setText(d.getName() + " " + df.format(res) + " %");
+            }
+        });
 
     }
 
@@ -86,12 +100,12 @@ public class ChartsController implements Initializable {
         bc.setTitle("عدد الموظفين في كل وظيفة");
         xAxis.setLabel("الوظائف");
         yAxis.setLabel("عدد الموظفين");
-        
+
         XYChart.Series series = new XYChart.Series();
-        for (Object[] o : emps.getChartData()) {  
+        for (Object[] o : emps.getChartData()) {
             series.getData().add(new XYChart.Data(o[0].toString(), Integer.parseInt(o[1].toString())));
         }
-        
+
         bc.getData().add(series);
 
         mGroup2.getChildren().add(bc);
@@ -117,7 +131,7 @@ public class ChartsController implements Initializable {
                     pieChartData2.add(
                             new PieChart.Data(o[0].toString(), Integer.parseInt(o[1].toString()))
                     );
-                }else{
+                } else {
                     noDataToDisplay.setVisible(true);
                 }
             }

@@ -9,11 +9,14 @@ import beans.Employe;
 import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -22,6 +25,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -33,8 +37,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -91,7 +97,7 @@ public class MainController implements Initializable {
     private ImageView minBarBtn;
     @FXML
     private HBox mTopBar;
-    @FXML 
+    @FXML
     private JFXButton employeScene;
     @FXML
     private JFXButton profilScene;
@@ -103,7 +109,7 @@ public class MainController implements Initializable {
     private Separator separator2;
     @FXML
     private Separator separator3;
-    
+
     @FXML
     private PieChart mChart;
 
@@ -114,13 +120,13 @@ public class MainController implements Initializable {
     private void switchtoProfil(ActionEvent e) throws IOException {
         headerText.setText("الوظائف");
         VBox v = FXMLLoader.load(getClass().getResource("/vue/ProfilVue.fxml"));
-        mBorder.setCenter(v);
+        mBorder.setCenter(fadeAnimate(v));
     }
 
     @FXML
     private void switchtoHome(ActionEvent e) throws IOException {
         headerText.setText("الواجهة");
-        mBorder.setCenter(mainCenter);
+        mBorder.setCenter(fadeAnimate(mainCenter));
         setChart();
         setCountsHome();
     }
@@ -129,35 +135,46 @@ public class MainController implements Initializable {
     private void switchtoEmploye(ActionEvent e) throws IOException {
         headerText.setText("الموظفون");
         VBox v = FXMLLoader.load(getClass().getResource("/vue/EmployeVue.fxml"));
-        mBorder.setCenter(v);
+        mBorder.setCenter(fadeAnimate(v));
     }
 
     @FXML
     private void switchEtudiant(ActionEvent e) throws IOException {
         headerText.setText("التلاميذ");
         VBox v = FXMLLoader.load(getClass().getResource("/vue/EtudiantVue.fxml"));
-        mBorder.setCenter(v);
+        mBorder.setCenter(fadeAnimate(v));
     }
 
     @FXML
     private void switchEtablissement(ActionEvent e) throws IOException {
         headerText.setText("المؤسسات");
         VBox v = FXMLLoader.load(getClass().getResource("/vue/EtablissementVue.fxml"));
-        mBorder.setCenter(v);
+        mBorder.setCenter(fadeAnimate(v));
     }
 
     @FXML
     private void switchSearch(ActionEvent e) throws IOException {
         headerText.setText("البحت");
         VBox v = FXMLLoader.load(getClass().getResource("/vue/SearchVue.fxml"));
-        mBorder.setCenter(v);
+        mBorder.setCenter(fadeAnimate(v));
     }
 
     @FXML
     private void switchCharts(ActionEvent e) throws IOException {
         headerText.setText("الرسوم البيانية");
         VBox v = FXMLLoader.load(getClass().getResource("/vue/ChartsVue.fxml"));
-        mBorder.setCenter(v);
+        mBorder.setCenter(fadeAnimate(v));
+    }
+    
+    public VBox fadeAnimate(VBox v) throws IOException {
+        FadeTransition ft = new FadeTransition(Duration.millis(1500));
+        ft.setNode(v);
+        ft.setFromValue(0.1);
+        ft.setToValue(1);
+        ft.setCycleCount(1);
+        ft.setAutoReverse(false);
+        ft.play();
+        return v;
     }
 
     private void setCountsHome() {
@@ -172,12 +189,22 @@ public class MainController implements Initializable {
         pieChartData.clear();
         mChart.setTitle("عدد الموظفين في كل وظيفة");
 
-        for (Object[] o : es.getChartData()) {
+        es.getChartData().forEach((o) -> {
             pieChartData.add(new PieChart.Data(o[0].toString(), Integer.parseInt(o[1].toString())));
-        }
-
+        });
+        
         mChart.getData().addAll(pieChartData);
-
+        
+        mChart.getData().forEach(d -> {
+             Optional<Node> opTextNode = mChart.lookupAll(".chart-pie-label").stream().filter(n -> n instanceof Text && ((Text) n).getText().contains(d.getName())).findAny();
+        if (opTextNode.isPresent()) {
+           Double res = ((d.getPieValue() / ps.getProfilsCount())*100);
+            DecimalFormat df = new DecimalFormat();
+            df.setMaximumFractionDigits(0);
+          ((Text) opTextNode.get()).setText(d.getName() + " " + df.format(res) + " %");
+        }
+      });
+        
     }
 
     @Override
@@ -246,14 +273,14 @@ public class MainController implements Initializable {
         Employe currentEmploye = es.findById(currentUserId);
         userName.setText(currentEmploye.getPrenom() + " " + currentEmploye.getNom());
         userEmail.setText(currentEmploye.getEmail());
-        
-        if(!currentEmploye.getProfil().getLibelle().equals("مدير")){
+
+        if (!currentEmploye.getProfil().getLibelle().equals("مدير")) {
             employeScene.setVisible(false);
             etablissementScene.setVisible(false);
             profilScene.setVisible(false);
             separator1.setVisible(false);
             separator2.setVisible(false);
-            separator3.setVisible(false);         
+            separator3.setVisible(false);
         }
 
         logOutBtn.setOnAction(e -> {

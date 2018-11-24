@@ -161,6 +161,8 @@ public class EtudiantService implements IDao<Etudiant> {
             return count;
         }
     }
+    
+    
 
     public List<Object[]> getChartData() {
         List<Object[]> mData = null;
