@@ -17,10 +17,11 @@
    <children>
       <Group VBox.vgrow="ALWAYS">
          <children>
-            <HBox prefHeight="140.0" prefWidth="688.0" spacing="10.0">
+            <HBox prefHeight="286.0" prefWidth="718.0" spacing="10.0">
                <children>
-                  <GridPane hgap="5.0" prefHeight="118.0" prefWidth="478.0" vgap="5.0">
+                  <GridPane hgap="10.0" prefHeight="118.0" prefWidth="478.0" vgap="10.0">
                      <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="357.0" minWidth="10.0" prefWidth="319.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="357.0" minWidth="10.0" prefWidth="319.0" />
                      </columnConstraints>
                      <rowConstraints>
@@ -40,6 +41,21 @@
                            </font>
                         </JFXTextField>
                         <JFXTextField fx:id="region" alignment="CENTER" focusColor="#ee3333" labelFloat="true" layoutX="251.0" layoutY="22.0" prefWidth="232.0" promptText="الإقليم" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="Arial Bold" size="16.0" />
+                           </font>
+                        </JFXTextField>
+                        <JFXTextField fx:id="telephone" alignment="CENTER" focusColor="#ee3333" labelFloat="true" prefWidth="232.0" promptText="الهاتف" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Arial Bold" size="16.0" />
+                           </font>
+                        </JFXTextField>
+                        <JFXTextField fx:id="codeEtablissement" alignment="CENTER" focusColor="#ee3333" labelFloat="true" prefWidth="232.0" promptText="رمز المؤسسة" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="Arial Bold" size="16.0" />
+                           </font>
+                        </JFXTextField>
+                        <JFXTextField fx:id="ville" alignment="CENTER" focusColor="#ee3333" labelFloat="true" prefWidth="232.0" promptText="البلدة" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <font>
                               <Font name="Arial Bold" size="16.0" />
                            </font>
@@ -66,11 +82,14 @@
             </HBox>
          </children>
       </Group>
-      <TableView fx:id="mTable" editable="true" nodeOrientation="RIGHT_TO_LEFT">
+      <TableView fx:id="mTable" editable="true" nodeOrientation="RIGHT_TO_LEFT" prefHeight="400.0" prefWidth="722.0">
          <columns>
-            <TableColumn fx:id="nomColumn" minWidth="92.0" prefWidth="266.0" text="الإسم" />
-            <TableColumn fx:id="typeColumn" minWidth="0.0" prefWidth="222.0" text="النوعية" />
-            <TableColumn fx:id="regionColumn" minWidth="92.0" prefWidth="232.0" text="الإقليم" />
+            <TableColumn fx:id="nomColumn" minWidth="92.0" prefWidth="126.0" text="الإسم" />
+            <TableColumn fx:id="typeColumn" minWidth="0.0" prefWidth="96.0" text="النوعية" />
+            <TableColumn fx:id="regionColumn" minWidth="18.0" prefWidth="130.0" text="الإقليم" />
+            <TableColumn fx:id="telephoneColumn" minWidth="18.0" prefWidth="132.0" text="الهاتف" />
+            <TableColumn fx:id="codeEtablissementColumn" minWidth="18.0" prefWidth="128.0" text="رمز المؤسسة" />
+            <TableColumn fx:id="villeColumn" minWidth="18.0" prefWidth="109.0" text="البلدة" />
          </columns>
       </TableView>
    </children>

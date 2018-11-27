@@ -1,10 +1,5 @@
 package controller;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import beans.Employe;
 import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
@@ -14,18 +9,12 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -37,10 +26,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -104,11 +91,15 @@ public class MainController implements Initializable {
     @FXML
     private JFXButton etablissementScene;
     @FXML
+    private JFXButton etudiantScene;
+    @FXML
     private Separator separator1;
     @FXML
     private Separator separator2;
     @FXML
     private Separator separator3;
+    @FXML
+    private Separator separator4;
 
     @FXML
     private PieChart mChart;
@@ -278,9 +269,11 @@ public class MainController implements Initializable {
             employeScene.setVisible(false);
             etablissementScene.setVisible(false);
             profilScene.setVisible(false);
+            etudiantScene.setVisible(false);
             separator1.setVisible(false);
             separator2.setVisible(false);
             separator3.setVisible(false);
+            separator4.setVisible(false);
         }
 
         logOutBtn.setOnAction(e -> {
@@ -303,7 +296,8 @@ public class MainController implements Initializable {
                 window.showAndWait();
 
                 if (controller.getCurrentState()) {
-                    userPreferences.clear();
+                    userPreferences.remove("currentUserId");
+                    userPreferences.remove("rememberMe");
 
                     Stage stage = new Stage();
                     stage.initStyle(StageStyle.TRANSPARENT);
@@ -319,8 +313,6 @@ public class MainController implements Initializable {
                 }
 
             } catch (IOException ex) {
-                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (BackingStoreException ex) {
                 Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });

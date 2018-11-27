@@ -5,7 +5,6 @@
  */
 package controller;
 
-import antlr.StringUtils;
 import beans.Employe;
 import beans.Etablissement;
 import beans.Etudiant;
@@ -27,8 +26,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,9 +37,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
@@ -53,12 +51,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import notification.Notification;
-import notification.Notifications;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.util.StringUtil;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import service.EmployeService;
@@ -134,8 +127,12 @@ public class EtudiantController implements Initializable {
     private TableColumn<Etudiant, LocalDate> dateSortieColumn;
     @FXML
     private TableColumn<Etudiant, Etablissement> etablissementColumn;
-    @FXML
-    private Button importeFileBtn;
+
+    private ProgressController controller;
+    private Stage window;
+    public static int j = 0;
+    public static int EtudAdded = 0;
+    public static int rowWithOutBlank = 0;
 
     //FXML Methods
     @FXML
@@ -267,133 +264,195 @@ public class EtudiantController implements Initializable {
         XSSFWorkbook workbook = new XSSFWorkbook(file);
         XSSFSheet sheet = workbook.getSheetAt(1);
 
-        String errors = "";
-        int EtudAdded = 0;
-        Row row;
         for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-            if (sheet.getRow(i) != null) {
-                row = (Row) sheet.getRow(i);
-
-                String numInscription = "";
-                if (row.getCell(1) == null || row.getCell(1).toString().equals("")) {
-                    errors += " Error Row :" + i + " Cell :" + 1;
-                    continue;
-                } else {
-                    if (isValideNumInscription(row.getCell(1).toString())) {
-                        numInscription = row.getCell(1).toString();
-                    } else {
-                        errors += "Invalide numInscription at row :" + i + " Cell :" + 1;
-                        continue;
-                    }
-                }
-
-                String nomComplet;
-                if (row.getCell(2) == null) {
-                    nomComplet = null;
-                } else {
-                    nomComplet = row.getCell(2).toString();
-                }
-
-                Date dt;
-                if (row.getCell(3) == null) {
-                    dt = null;
-                } else {
-
-                    dt = tryParse(row.getCell(3).toString());
-
-                }
-                // System.out.println("Date Naissance :" + dt);
-                
-                 Date dt2;
-                if (row.getCell(7) == null) {
-                    dt2 = null;
-                } else {
-
-                    dt2 = tryParse(row.getCell(7).toString());
-
-                }
-
-                String lieu;
-                if (row.getCell(4) == null) {
-                    lieu = null;
-                } else {
-                    lieu = row.getCell(4).toString();
-
-                }
-                // System.out.println("lieu :" + lieu);
-
-                String cne;
-                if (row.getCell(6) == null) {
-                    cne = null;
-                } else {
-                    cne = row.getCell(6).toString().replaceAll("\\.", "");
-
-                }
-                // System.out.println("cne : " + cne);
-
-                String niveau;
-                if (row.getCell(5) == null) {
-                    niveau = null;
-                } else {
-                    niveau = row.getCell(5).toString();
-                }
-                // System.out.println("niveau : " + niveau);
-
-                String decision = "";
-                if (row.getCell(8) == null) {
-                    decision = null;
-                } else {
-                    decision = row.getCell(8).toString();
-                }
-
-                int numDossier = -1;
-                if (row.getCell(9) == null) {
-                    numDossier = -1;
-                } else {
-                    Double getNumber = Double.parseDouble(row.getCell(9).toString());
-                    numDossier = getNumber.intValue();
-                }
-                
-                
-
-                if (es.isNotExist(nomComplet, dt)) {
-                    Etudiant e = new Etudiant(nomComplet, dt, lieu, cne, niveau, numInscription, decision, numDossier, dt2,currentEtab);
-                    es.create(e);
-                    init();
-                    EtudAdded++;
-                } else {
-                    continue;
-                }
-
-            } else {
+            if (sheet.getRow(i).getCell(0).toString().equals("") && sheet.getRow(i).getCell(1).toString().equals("") && sheet.getRow(i).getCell(2).toString().equals("")) {
+                rowWithOutBlank = sheet.getRow(i).getRowNum();
                 break;
             }
-
         }
+        System.out.println("ListROW = " + rowWithOutBlank);
+        showProgress();
 
-        if (EtudAdded != 0) {
-            String title = "إعلام";
-            String message = "لقد تمت الإضافة بنجاح";
+        Task<Integer> task = new Task<Integer>() {
+            @Override
+            protected Integer call() throws Exception {
+                Row row;
+                String errors = "";
+                for (j = 1; j <= rowWithOutBlank - 1; j++) {
+                    if (sheet.getRow(j) != null) {
+                        row = (Row) sheet.getRow(j);
 
-            TrayNotification tray = new TrayNotification();
-            tray.setTitle(title);
-            tray.setMessage(message);
-            tray.setRectangleFill(Paint.valueOf("#2A9A84"));
-            tray.setAnimationType(AnimationType.POPUP);
-            tray.setNotificationType(NotificationType.SUCCESS);
-            tray.showAndDismiss(Duration.seconds(3));
-        } else {
-            String title = "إعلام";
-            String message = "ليس هناك أي تحديث متاح";
+                        String numInscription = "";
+                        if (row.getCell(1) == null || row.getCell(1).toString().equals("")) {
+                            errors += " Error Row :" + j + " Cell :" + 1;
+                            continue;
+                        } else {
+                            if (isValideNumInscription(row.getCell(1).toString())) {
+                                numInscription = row.getCell(1).toString();
+                            } else {
+                                errors += "Invalide numInscription at row :" + j + " Cell :" + 1;
+                                continue;
+                            }
+                        }
 
-            TrayNotification tray = new TrayNotification();
-            tray.setTitle(title);
-            tray.setMessage(message);
-            tray.setRectangleFill(Paint.valueOf("#f44248"));
-            tray.setAnimationType(AnimationType.POPUP);
-            tray.setNotificationType(NotificationType.ERROR);
-            tray.showAndDismiss(Duration.seconds(3));
-        }
+                        String nomComplet;
+                        if (row.getCell(2) == null) {
+                            nomComplet = null;
+                        } else {
+                            nomComplet = row.getCell(2).toString();
+                        }
+
+                        Date dt;
+                        if (row.getCell(3) == null) {
+                            dt = null;
+                        } else {
+                            dt = tryParse(row.getCell(3).toString());
+                        }
+
+                        Date dt2;
+                        if (row.getCell(7) == null) {
+                            dt2 = null;
+                        } else {
+                            dt2 = tryParse(row.getCell(7).toString());
+                        }
+
+                        String lieu;
+                        if (row.getCell(4) == null) {
+                            lieu = null;
+                        } else {
+                            lieu = row.getCell(4).toString();
+                        }
+
+                        String cne;
+                        if (row.getCell(6) == null) {
+                            cne = null;
+                        } else {
+                            cne = row.getCell(6).toString().replaceAll("\\.", "");
+                        }
+
+                        String niveau;
+                        if (row.getCell(5) == null) {
+                            niveau = null;
+                        } else {
+                            niveau = row.getCell(5).toString();
+                        }
+
+                        String decision = "";
+                        if (row.getCell(8) == null) {
+                            decision = null;
+                        } else {
+                            decision = row.getCell(8).toString();
+                        }
+
+                        int numDossier = -1;
+                        if (row.getCell(9) == null) {
+                            numDossier = -1;
+                        } else {
+                            Double getNumber = Double.parseDouble(row.getCell(9).toString());
+                            numDossier = getNumber.intValue();
+                        }
+
+                        if (es.isNotExist(nomComplet, dt)) {
+                            Etudiant e = new Etudiant(nomComplet, dt, lieu, cne, niveau, numInscription, decision, numDossier, dt2, currentEtab);
+                            es.create(e);
+                            EtudAdded++;
+
+                            if (isCancelled()) {
+                                break;
+                            } else {
+                                updateProgress(j, rowWithOutBlank);
+                                updateMessage(row.getCell(0).toString()+"  "+ row.getCell(2).toString());
+                            }
+
+                        } else {
+                            if (isCancelled()) {
+                                break;
+                            } else {
+                                updateProgress(j, rowWithOutBlank);
+                                updateMessage(row.getCell(0).toString()+"  "+ row.getCell(2).toString());
+                            }
+                        }
+
+                    } else {
+                        break;
+                    }
+                }
+                Thread.sleep(10);
+                return j;
+            }
+
+            @Override
+            protected void cancelled() {
+                super.cancelled();
+                init();
+                window.close();            
+            }
+
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                init();
+                if (EtudAdded != 0) {
+
+                    String title = "إعلام";
+                    String message = "لقد تمت الإضافة بنجاح";
+
+                    TrayNotification tray = new TrayNotification();
+                    tray.setTitle(title);
+                    tray.setMessage(message);
+                    tray.setRectangleFill(Paint.valueOf("#2A9A84"));
+                    tray.setAnimationType(AnimationType.POPUP);
+                    tray.setNotificationType(NotificationType.SUCCESS);
+                    tray.showAndDismiss(Duration.seconds(3));
+                } else {
+
+                    String title = "إعلام";
+                    String message = "ليس هناك أي تحديث متاح";
+
+                    TrayNotification tray = new TrayNotification();
+                    tray.setTitle(title);
+                    tray.setMessage(message);
+                    tray.setRectangleFill(Paint.valueOf("#f44248"));
+                    tray.setAnimationType(AnimationType.POPUP);
+                    tray.setNotificationType(NotificationType.ERROR);
+                    tray.showAndDismiss(Duration.seconds(3));
+
+                }
+                window.close();
+            }
+
+        };
+
+        task.messageProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            controller.getmMessage().setText(newValue + "...");
+
+        });
+
+        controller.getmProgress().progressProperty().unbind();
+        controller.getmIndicator().progressProperty().unbind();
+        controller.getmProgress().progressProperty().bind(task.progressProperty());
+        controller.getmIndicator().progressProperty().bind(task.progressProperty());
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+
+    }
+
+    private void showProgress() throws IOException {
+        window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(new Image(this.getClass().getResource("/images/loginLogo.png").toString()));
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/vue/ProgressVue.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+        controller = fxmlLoader.<ProgressController>getController();
+        Scene scene = new Scene(root);
+        window.setScene(scene);
+        window.show();
+        controller = fxmlLoader.<ProgressController>getController();
+
     }
 
     //clear Fields function
@@ -488,9 +547,6 @@ public class EtudiantController implements Initializable {
         currentEtab = e.getEtablissement();
         etablissement.getSelectionModel().select(currentEtab);
 
-        if(!e.getProfil().getLibelle().equals("مدير")){
-            importeFileBtn.setVisible(false);
-        }
     }
 
 }

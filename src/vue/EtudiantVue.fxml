@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mCenter" nodeOrientation="RIGHT_TO_LEFT" styleClass="mainContainer" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EtudiantController">
+<VBox fx:id="mCenter" nodeOrientation="RIGHT_TO_LEFT" prefHeight="728.0" prefWidth="1244.0" styleClass="mainContainer" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EtudiantController">
    <children>
       <Group VBox.vgrow="ALWAYS">
          <children>

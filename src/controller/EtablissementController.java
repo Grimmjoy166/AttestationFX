@@ -46,6 +46,12 @@ public class EtablissementController implements Initializable {
     @FXML
     private TextField region;
     @FXML
+    private TextField telephone;
+    @FXML
+    private TextField codeEtablissement;
+    @FXML
+    private TextField ville;
+    @FXML
     private Button btnAdd;
     @FXML
     private TableView<Etablissement> mTable;
@@ -55,10 +61,16 @@ public class EtablissementController implements Initializable {
     private TableColumn<Etablissement, String> typeColumn;
     @FXML
     private TableColumn<Etablissement, String> regionColumn;
+    @FXML
+    private TableColumn<Etablissement, String> telephoneColumn;
+    @FXML
+    private TableColumn<Etablissement, String> codeEtablissementColumn;
+    @FXML
+    private TableColumn<Etablissement, String> villeColumn;
 
     @FXML
     private void saveAction(ActionEvent e) {
-        es.create(new Etablissement(nom.getText(), type.getText(), region.getText()));
+        es.create(new Etablissement(nom.getText(), type.getText(), region.getText(), telephone.getText(), codeEtablissement.getText(), ville.getText()));
         init();
         clearFields();
         checkRowCount();
@@ -115,6 +127,9 @@ public class EtablissementController implements Initializable {
             e.setNom(nom.getText());
             e.setType(type.getText());
             e.setRegion(region.getText());
+            e.setTelephone(telephone.getText());
+            e.setCodeEtablissement(codeEtablissement.getText());
+            e.setVille(ville.getText());
             es.update(e);
             init();
             clearFields();
@@ -142,7 +157,10 @@ public class EtablissementController implements Initializable {
         nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         regionColumn.setCellValueFactory(new PropertyValueFactory<>("region"));
-
+        telephoneColumn.setCellValueFactory(new PropertyValueFactory<>("telephone"));
+        codeEtablissementColumn.setCellValueFactory(new PropertyValueFactory<>("codeEtablissement"));
+        villeColumn.setCellValueFactory(new PropertyValueFactory<>("ville"));
+        
         if (es.findAll() != null) {
             etablissements.addAll(es.findAll());
         }
@@ -166,6 +184,9 @@ public class EtablissementController implements Initializable {
             nom.setText(item.getNom());
             type.setText(item.getType());
             region.setText(item.getRegion());
+            telephone.setText(item.getTelephone());
+            codeEtablissement.setText(item.getCodeEtablissement());
+            ville.setText(item.getVille());
         });
         
         checkRowCount();

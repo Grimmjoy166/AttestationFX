@@ -5,6 +5,8 @@
  */
 package controller;
 
+import beans.Attestation;
+import beans.AttestationPK;
 import beans.Employe;
 import beans.Etablissement;
 import beans.Etudiant;
@@ -39,6 +41,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.view.JasperViewer;
+import service.AttestationService;
 import service.EmployeService;
 import service.EtablissementService;
 import service.EtudiantService;
@@ -52,6 +55,7 @@ public class SearchController implements Initializable {
     EtudiantService es = new EtudiantService();
     EtablissementService ets = new EtablissementService();
     EmployeService eps = new EmployeService();
+    AttestationService as = new AttestationService();
     
     ObservableList<Etudiant> etudiants = FXCollections.observableArrayList();
     ObservableList<Etudiant> fetchedEtudiants = FXCollections.observableArrayList();
@@ -175,7 +179,17 @@ public class SearchController implements Initializable {
                 Employe currentEmploye = eps.findById(currentUserId);
                 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-            
+                
+                Attestation attestationCreated = as.createWithFeedBack(new Attestation(new AttestationPK(new Date(), currentEmploye.getId(), item.getId()), currentEmploye, item));
+               
+                if(userPreferences.getInt("nextNumero", -1) != -1){
+                  userPreferences.putInt("nextNumero", attestationCreated.getNumero()+1);
+                } else if(as.getLastInsertedYear() != new Date().getYear()) {
+                  userPreferences.remove("nextNumero");
+                } else {
+                  userPreferences.putInt("nextNumero", 1);
+                }
+                
                 JasperReport jr = JasperCompileManager.compileReport("src/report/AttestationReport.jrxml");
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 parameters.put("nomComplet", item.getNomComplet());
@@ -189,6 +203,10 @@ public class SearchController implements Initializable {
                 parameters.put("nomResponsable", currentEmploye.getNom()+" "+currentEmploye.getPrenom());
                 parameters.put("profilResponsable", currentEmploye.getProfil().getLibelle());
                 parameters.put("nomEtablissement", currentEmploye.getEtablissement().getNom());
+                parameters.put("ville", currentEmploye.getEtablissement().getVille());
+                parameters.put("codeEtablissement", currentEmploye.getEtablissement().getCodeEtablissement());
+                parameters.put("telephone", currentEmploye.getEtablissement().getTelephone());
+                parameters.put("numero", String.valueOf(attestationCreated.getNumero()));
                 
                 JRDataSource dataSource = new JREmptyDataSource();
                 JasperPrint jp = JasperFillManager.fillReport(jr, parameters, dataSource);

@@ -27,21 +27,30 @@ public class Etablissement {
     private List<Etudiant> etudiants;
     @OneToMany(mappedBy = "etablissement")
     private List<Employe> employes;
-
+    private String telephone;
+    private String codeEtablissement;
+    private String ville;
+    
     public Etablissement() {
     }
 
-    public Etablissement(int id, String nom, String type, String region) {
+    public Etablissement(int id, String nom, String type, String region, String telephone, String codeEtablissement, String ville) {
         this.id = id;
         this.nom = nom;
         this.type = type;
         this.region = region;
+        this.telephone = telephone;
+        this.codeEtablissement = codeEtablissement;
+        this.ville = ville;
     }
 
-    public Etablissement(String nom, String type, String region) {
+    public Etablissement(String nom, String type, String region, String telephone, String codeEtablissement, String ville) {
         this.nom = nom;
         this.type = type;
         this.region = region;
+        this.telephone = telephone;
+        this.codeEtablissement = codeEtablissement;
+        this.ville = ville;
     }
 
     public int getId() {
@@ -91,6 +100,31 @@ public class Etablissement {
     public void setEmployes(List<Employe> employes) {
         this.employes = employes;
     }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getCodeEtablissement() {
+        return codeEtablissement;
+    }
+
+    public void setCodeEtablissement(String codeEtablissement) {
+        this.codeEtablissement = codeEtablissement;
+    }
+
+    public String getVille() {
+        return ville;
+    }
+
+    public void setVille(String ville) {
+        this.ville = ville;
+    }
+    
     
     
 
